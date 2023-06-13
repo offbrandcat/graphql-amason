@@ -1,8 +1,8 @@
 {
   "name": "amason",
   "version": "1.0.0",
-  "description": "fill this out",
-  "main": "index.js",
+  "description": "another-ecommerce app",
+  "main": "server.js",
   "scripts": {
     "start": "node server/server.js --ignore client",
     "develop": "concurrently \"cd server && npm run watch\" \"cd client && npm start\"",
