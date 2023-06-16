@@ -1,23 +1,15 @@
-const db = require('../config/db');
-const { Order, Product, User, Review } = require('../models');
-const productData = require('./productData.json');
-const userData = require('./userData.json');
+const db = require('../config/connection');
+const { User, Product, Order, Review } = require('../models/index');
+const productSeed = require('./products.json');
 
 db.once('open', async () => {
-  try {
-    await User.deleteMany({});
-    // await Order.deleteMany({});
-    await Product.deleteMany({});
-    // await Review.deleteMany({});
+  await User.deleteMany({});
+  await Product.deleteMany({});
+  await Order.deleteMany({});
+  await Review.deleteMany({});
 
-    const newProducts = await Product.create(productData);
-    const newUsers = await User.create(userData);
+  const technologies = await Product.insertMany(productSeed);
 
-  } catch (err) {
-    console.error(err);
-    process.exit(1);
-  }
-
-  console.log('this worked');
+  console.log('Seed worked');
   process.exit(0);
 });
