@@ -1,33 +1,44 @@
 const express = require("express");
 const path = require("path");
-const dotenv = require('dotenv');
-const cookieParser = require('cookie-parser');
-const db = require('./config/connection')
-const app = express();
+const { ApolloServer } = require('apollo-server-express');
+const { typeDefs, resolvers } = require('./schema');
+
+const db = require("./config/connection");
+
 const PORT = process.env.PORT || 3001;
-const routes = require('./routes');
 
-dotenv.config();
+const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers
+});
 
+const app = express();
 
-
-// connectDB();
-
-//body parcer middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(routes);
 
-//cookie parcer middleware
-app.use(cookieParser());
 
-// app.listen(PORT, () =>
-//   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
-// );
+app.use(notFound);
+app.use(errorHandler);
 
-db.once("open", () => {
-  console.log('penguin')
-  app.listen(PORT, () => {
-    console.log(`API server running on port ${PORT}!`);
-  });
+if(process.env.NODE_ENV === 'production') {
+  // To READ the react content when it is deployed in the internet
+  app.use(express.static(path.join(__dirname, '../client/build')));
+}
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build/index.html'));
 });
+
+// Start Apolloserver, then connect to express, connect to mongoose, THEN start the app
+const startApolloServer = async () => {
+  await apolloServer.start();
+  apolloServer.applyMiddleware({ app });
+  db.once('open', () => {
+      app.listen(PORT, () => {
+          console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+      })
+  })
+}
+
+startApolloServer();
