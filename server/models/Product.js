@@ -1,37 +1,8 @@
-const mongoose = require('mongoose');
-const { Schema, model } = mongoose;
-
-const user = require('./userModel');
-
-const reviewSchema = new Schema(
-  {
-    name: { type: String, 
-      required: true 
-    },
-    rating: { type: Number, 
-      required: true 
-    },
-    comment: { type: String, 
-      required: true 
-    },
-    user: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: 'User',
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
+const { Schema, model } = require('mongoose');
+const review = require('./Review');
 
 const productSchema = new Schema(
   {
-    user: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: 'User',
-    },
     name: {
       type: String,
       required: true,
@@ -52,7 +23,10 @@ const productSchema = new Schema(
       type: String,
       required: true,
     },
-    reviews: [reviewSchema],
+    review: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Review'
+    }],
     rating: {
       type: Number,
       required: true,

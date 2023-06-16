@@ -1,44 +1,36 @@
-const express = require("express");
-const path = require("path");
-const { ApolloServer } = require('apollo-server-express');
-const { typeDefs, resolvers } = require('./schema');
+const express = require('express'); 
+// const path = require('path'); 
+const { ApolloServer } = require('apollo-server-express'); 
+const { typeDefs, resolvers } = require('./schemas');
+const db = require('./config/db')
+const PORT = process.env.PORT || 3001; 
 
-const db = require("./config/connection");
-
-const PORT = process.env.PORT || 3001;
-
-const apolloServer = new ApolloServer({
+const server = new ApolloServer({
   typeDefs,
   resolvers
-});
+})
 
-const app = express();
-
-app.use(express.json());
+const app = express(); 
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
+// if (process.env.NODE_ENV === 'production') {
+//   app.use(express.static(path.join(__dirname, '../client/build')))
+// }
 
-app.use(notFound);
-app.use(errorHandler);
+// app.get('/', (req,res) => {
+//   res.sendFile(path.join(__dirname, '../client/build/index.html'))
+// })
 
-if(process.env.NODE_ENV === 'production') {
-  // To READ the react content when it is deployed in the internet
-  app.use(express.static(path.join(__dirname, '../client/build')));
-}
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/build/index.html'));
-});
-
-// Start Apolloserver, then connect to express, connect to mongoose, THEN start the app
 const startApolloServer = async () => {
-  await apolloServer.start();
-  apolloServer.applyMiddleware({ app });
-  db.once('open', () => {
-      app.listen(PORT, () => {
-          console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-      })
+  await server.start();
+  server.applyMiddleware({ app });
+
+  db.once('open', () => { 
+    app.listen(PORT, () => { 
+      console.log(`http://localhost:${PORT}${server.graphqlPath}`)
+    })
   })
 }
 
-startApolloServer();
+startApolloServer(); 

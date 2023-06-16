@@ -1,9 +1,6 @@
-const mongoose = require('mongoose');
-const { Schema, model } = mongoose;
+const { Schema, model } = require('mongoose');
 
-
-const product = require('./productModel');
-const user = require('./userModel');
+const product = require('./Product');
 
 const orderSchema = new Schema(
   {
@@ -12,50 +9,22 @@ const orderSchema = new Schema(
       required: true,
       ref: 'User',
     },
-    orderItems: [
+    product: [
       {
-        name: { type: String, 
-          required: true 
-        },
-        qty: { type: Number, 
-          required: true 
-        },
-        image: { type: String, 
-          required: true 
-        },
-        price: { type: Number, 
-          required: true 
-        },
-        product: {
-          type: Schema.Types.ObjectId,
-          required: true,
-          ref: 'Product',
-        },
-      },
+        type: Schema.Types.ObjectId,
+        ref: 'Product',
+      }
     ],
     shippingAddress: {
-      address: { type: String, 
-        required: true 
-      },
-      city: { type: String, 
-        required: true 
-      },
-      postalCode: { type: String, 
-        required: true 
-      },
-      country: { type: String, 
-        required: true 
-      },
+      type: String,
+      required: true
     },
     paymentMethod: {
       type: String,
       required: true,
     },
     paymentResult: {
-      id: { type: String },
-      status: { type: String },
-      update_time: { type: String },
-      email_address: { type: String },
+      type: Boolean
     },
     itemsPrice: {
       type: Number,
